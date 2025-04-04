@@ -1,10 +1,16 @@
-function App() {
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Login from './pages/Login';
+import Main from './pages/main';
 
-  return (
-    <>
-      <h1 className="text-2xl">OI</h1>
-    </>
-  )
+export default function App(){
+    return(
+        <>
+            <BrowserRouter basename='/movieApp/'>
+                <Routes>
+                    <Route path="/" element={<Login />} />
+                    <Route path="/Main" element={<Main />} />
+                </Routes>
+            </BrowserRouter>
+        </>
+    )
 }
-
-export default App
