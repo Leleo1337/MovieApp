@@ -6,7 +6,7 @@
 - Top rated movies
 - Like / dislike movies
 
--
+------------------
 
-- account creating
+- account creation
 - Saving watchlist in a db
