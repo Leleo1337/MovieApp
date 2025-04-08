@@ -7,6 +7,7 @@ import Card from "../components/Card";
 import { MovieProps, ButtonProps } from "../types/types.ts";
 import { fetchPopularMovies, fetchTopRatedMovies, fetchUpcommingMovies } from "../services/apiServices.ts";
 import Loading from "../components/Loading.tsx";
+import EmptyWatchList from "../components/EmptyWatchList.tsx";
 
 export default function Main() {
    // const [searchQuery, setSearchQuery] = useState("");
@@ -179,8 +180,10 @@ export default function Main() {
             <div className="hidden sm:flex gap-1.5 mx-auto justify-baseline w-[90%] pt-8 pb-6">{renderButtons}</div>
          </header>
          <main>
-            <div className="flex justify-center w-[90%] mx-auto pb-24">
+            <div className="flex justify-center w-[90%] mx-auto pb-24 mt-4">
                <div className="flex justify-center items-center flex-wrap mx-auto gap-6 w-full text-white">
+                {activeIndex == 3 && watchList.length <= 0 && <EmptyWatchList/>}
+
                   {isLoading ? (
                      <Loading />
                   ) : (
