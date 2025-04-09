@@ -10,6 +10,16 @@ export interface MovieProps {
    addToWatchList: () => void;
    removeFromWatchList: () => void;
 }
+export interface MovieNotFoundProps {
+   searchQuery: string;
+}
+
+export interface SearchResultProps{
+   title: string
+   poster_path: string
+   overView: string
+   click: () => void
+}
 
 export interface ButtonProps {
    emoji: React.ReactNode;
