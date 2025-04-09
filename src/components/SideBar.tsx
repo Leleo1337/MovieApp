@@ -4,7 +4,7 @@ import { LogOut } from "lucide-react";
 export default function SideBar({ renderButtons }: any) {
    return (
       <>
-         <div className="absolute z-0 right-0 w-[60vw] h-screen bg-sideBar border-l-1 border-gray-400/10 shadow">
+         <div className="absolute z-20 right-0 w-[60vw] h-screen bg-sideBar border-l-1 border-gray-400/10 shadow">
             <div className="border-b border-gray-400/10 h-20">
                <Link to={"profile"}>
                   <img
