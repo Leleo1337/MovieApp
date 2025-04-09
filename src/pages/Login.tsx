@@ -27,8 +27,8 @@ export default function Login() {
                      <input
                         className="text-gray-100 bg-gray-700/50 border border-gray-600 px-4 py-2 rounded-md shadow"
                         autoComplete="off"
-                        value={"Click login to continue"}
-                        type="text"
+                        placeholder="Click login to continue"
+                        type="email"
                         name="username"
                         id="username"
                      />
@@ -40,8 +40,8 @@ export default function Login() {
                      <input
                         className="text-gray-100 bg-gray-700/50 border border-gray-600 px-4 py-2 rounded-md shadow"
                         type="password"
-                        name="username"
-                        id="username"
+                        name="password"
+                        id="password"
                      />
                   </div>
                   <Link
@@ -51,9 +51,9 @@ export default function Login() {
                      Login
                   </Link>
                   <p className="text-white">
-                     Don't have an account?
-                     <a href="#" className="text-button border-b-1">
-                        Sign-up
+                     Don't have an account? {" "}
+                     <a href="#" className="text-button hover:text-button/80 border-b-1"> 
+                         Register
                      </a>
                   </p>
                </div>
