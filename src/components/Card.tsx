@@ -1,13 +1,14 @@
 import { Calendar, Clock, Star } from "lucide-react";
 import { MovieProps } from "../types/types.ts";
+import imageNotFound from '../assets/imageNotFound.png'
 
 export default function Card({ title, poster_path, release_date, vote_average, runtime, isInWatchList, overview ,addToWatchList, removeFromWatchList }: MovieProps) {
    const imageUrl = `https://image.tmdb.org/t/p/w500${poster_path}`;
-
+   
    return (
-      <div className="relative w-full max-w-[320px] rounded-xl hover:scale-105 group transition-all ease-in">
+      <div className="w-full max-w-[320px] rounded-xl hover:scale-105 group transition-all ease-in">
          <div>
-            <img className="h-100 w-full" src={imageUrl} alt="Movie Image" />
+            <img className="h-100 w-full" src={imageUrl.includes("null")? imageNotFound: imageUrl } alt="Movie Image" />
          </div>
          <div className="relative bg-secondary px-2 rounded-b-2xl py-4">
             <div className="flex items-center justify-between pb-4 gap-2">
