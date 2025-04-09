@@ -12,7 +12,7 @@ import PageButton from "../components/PageButton.tsx";
 import Card from "../components/Card";
 import Loading from "../components/Loading.tsx";
 import EmptyWatchList from "../components/EmptyWatchList.tsx";
-import SearchResult from "../components/SearchResult.tsx";
+import SearchDropDown from "../components/SearchDropDown.tsx";
 import MovieNotFound from "../components/MovieNotFound.tsx";
 
 export default function Main() {
@@ -255,7 +255,7 @@ export default function Main() {
                   {showDropDown && results.length > 0 && (
                      <ul className="absolute  top-full left-3 py-2 bg-secondary right-0 mt-1 rounded-md shadow-lg z-20">
                         {results.map((movie) => (
-                           <SearchResult
+                           <SearchDropDown
                               key={movie.id}
                               title={movie.title}
                               poster_path={movie.poster_path}
