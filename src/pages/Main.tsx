@@ -1,48 +1,58 @@
-import { Menu, TrendingUp, Star, Clock, Heart, Github } from "lucide-react";
+import { Menu, TrendingUp, Star, Clock, Heart, Github, ArrowLeft, ArrowRight } from "lucide-react";
 import { useEffect, useState } from "react";
-import SideBar from "../components/SideBar";
-import Button from "../components/Button";
-//import MovieNotFound from "../components/MovieNotFound";
-import Card from "../components/Card";
 import { MovieProps, ButtonProps } from "../types/types.ts";
-import { fetchPopularMovies, fetchTopRatedMovies, fetchUpcommingMovies } from "../services/apiServices.ts";
+import {
+   fetchPopularMovies,
+   fetchTopRatedMovies,
+   fetchUpcommingMovies,
+   handleQueryRequests,
+} from "../services/apiServices.ts";
+import SideBar from "../components/SideBar";
+import PageButton from "../components/PageButton.tsx";
+import Card from "../components/Card";
 import Loading from "../components/Loading.tsx";
 import EmptyWatchList from "../components/EmptyWatchList.tsx";
+import SearchResult from "../components/SearchResult.tsx";
+import MovieNotFound from "../components/MovieNotFound.tsx";
 
 export default function Main() {
-   // const [searchQuery, setSearchQuery] = useState("");
-
-   const [isLoading, setIsLoading] = useState<boolean>(false);
+   //header / sidebar
    const [sideActive, setSideActive] = useState<boolean>(false);
 
+   // tabs
    const [activeIndex, setActiveIndex] = useState<number | null>(0);
 
+   //movies
    const [movies, setMovies] = useState<MovieProps[]>([]);
    const [watchList, setWatchlist] = useState<MovieProps[]>([]);
+   const [isLoading, setIsLoading] = useState<boolean>(false);
+   const [notFound, setNotFound] = useState<boolean>(false);
+   const [movieTab, setMovieTab] = useState<number>(1);
 
-   /*function search(query: string): void {
-      setSearchQuery(query);
-   }
-   */
+   //dropdown
+   const [query, setquery] = useState<string>("");
+   const [search, setSearch] = useState<string>("");
+   const [results, setResults] = useState<MovieProps[]>([]);
+   const [showDropDown, setShowDropDown] = useState(true);
 
-   const buttons: ButtonProps[] = [
+   const PageButtonsArr: ButtonProps[] = [
       {
          text: "Popular",
          emoji: <TrendingUp />,
-         active: true,
-         onClick: () => handleFetchPopularMovies(),
+         active: false,
+         onClick: () => handleFetchPopularMovies(1),
       },
       {
          text: "Top Rated",
          emoji: <Star />,
          active: false,
-         onClick: () => handleFetchTopRatedMovies(),
+         onClick: () => handleFetchTopRatedMovies(1),
       },
       {
          text: "Upcoming",
          active: true,
          emoji: <Clock />,
-         onClick: () => handleFetchUpcommingMovies(),
+         onClick: () => handleFetchUpcommingMovies(1),
       },
       {
          text: `WatchList (${watchList.length})`,
@@ -52,53 +62,84 @@ export default function Main() {
       },
    ];
 
-   const renderButtons = buttons.map((button, index) => (
-      <Button
+   const renderButtons = PageButtonsArr.map((button, index) => (
+      <PageButton
          key={index}
          emoji={button.emoji}
          text={button.text}
          active={activeIndex == index}
          onClick={() => {
             setActiveIndex(index);
+            setMovieTab(1);
+            setSearch("");
             button.onClick?.();
          }}
       />
    ));
 
-   async function handleFetchPopularMovies() {
+   async function handleFetchPopularMovies(movieTab: number) {
       try {
          setIsLoading(true);
-         const movies = await fetchPopularMovies();
+         const movies = await fetchPopularMovies(movieTab);
          setMovies(movies);
       } catch (e) {
          console.error("Failed to fetch movies:", e);
       } finally {
+         setNotFound(false);
          setIsLoading(false);
       }
    }
 
-   async function handleFetchTopRatedMovies() {
+   async function handleFetchTopRatedMovies(movieTab: number) {
       try {
          setIsLoading(true);
-         const movies = await fetchTopRatedMovies();
+         const movies = await fetchTopRatedMovies(movieTab);
          setMovies(movies);
       } catch (e) {
          console.error("Failed to fetch movies:", e);
       } finally {
+         setNotFound(false);
          setIsLoading(false);
       }
    }
 
-   async function handleFetchUpcommingMovies() {
+   async function handleFetchUpcommingMovies(movieTab: number) {
       try {
          setIsLoading(true);
-         const movies = await fetchUpcommingMovies();
+         const movies = await fetchUpcommingMovies(movieTab);
          setMovies(movies);
       } catch (error) {
          console.error("Failed to fetch movies: ", error);
       } finally {
+         setNotFound(false);
          setIsLoading(false);
       }
+   }
+
+   async function handleSubmit(query: string) {
+      const data = await handleQueryRequests(query, 1);
+
+      if (data.length > 0) {
+         setNotFound(false);
+         setMovies(data);
+         setShowDropDown(false);
+         return;
+      }
+      setMovies([]);
+      setNotFound(true);
+   }
+
+   function handleDropDownFunctions(movieTitle: string, movieObj: MovieProps): void {
+      setSearch(movieTitle);
+      setMovies([movieObj]);
+      setShowDropDown(false);
+      setActiveIndex(null);
+      setNotFound(false);
+   }
+
+   function handleInputFunctions(e: React.ChangeEvent<HTMLInputElement>): void {
+      setSearch(e.target.value);
+      setquery(e.target.value);
    }
 
    function addToWatchList(movie: MovieProps) {
@@ -125,13 +166,38 @@ export default function Main() {
    }
 
    useEffect(() => {
+      if (query.trim() === "") {
+         setResults([]);
+         setShowDropDown(false);
+         return;
+      }
+      const fetchData = async () => {
+         try {
+            const data = await handleQueryRequests(query, movieTab);
+            setResults(data.slice(0, 3));
+            setShowDropDown(true);
+
+            console.log(data);
+         } catch (e) {
+            console.error("[Error] Something went wrong! try again later");
+         }
+      };
+
+      const delayDebounce = setTimeout(() => {
+         fetchData();
+      }, 350);
+
+      return () => clearTimeout(delayDebounce);
+   }, [query]);
+
+   useEffect(() => {
       if (activeIndex === 3) {
          setMovies(watchList);
       }
    }, [watchList, activeIndex]);
 
    useEffect(() => {
-      handleFetchPopularMovies();
+      handleFetchPopularMovies(1);
    }, []);
 
    useEffect(() => {
@@ -151,11 +217,21 @@ export default function Main() {
       };
    }, []);
 
+   useEffect(() => {
+      if (activeIndex === 0) {
+         handleFetchPopularMovies(movieTab);
+      } else if (activeIndex === 1) {
+         handleFetchTopRatedMovies(movieTab);
+      } else if (activeIndex === 2) {
+         handleFetchUpcommingMovies(movieTab);
+      }
+   }, [movieTab, activeIndex]);
+
    return (
       <>
          <header className="sticky top-0 z-10 bg-secondary/80 backdrop-blur-lg pb-8 sm:pb-2 sm:mb-8">
             <Menu
-               className="absolute z-1 top-6 right-4 text-white sm:hidden"
+               className="absolute z-21 top-6 right-4 text-white sm:hidden"
                size={28}
                onClick={() => setSideActive((prev) => !prev)}
             />
@@ -166,23 +242,44 @@ export default function Main() {
                      Movie Watchlist
                   </h1>
                </div>
-               <div className="px-4 sm:w-[70%]">
+               <div className="relative px-4 sm:w-[70%]">
                   <input
                      type="text"
                      name="search"
                      placeholder="Search for movies..."
                      autoComplete="off"
                      className="w-full mx-auto sm:mt-8 text-gray-100 bg-gray-700/50 border border-gray-600 px-4 py-2 md:py-3 rounded-md shadow"
-                     //onChange={(e) => search(e.target.value)}
+                     onChange={(e) => handleInputFunctions(e)}
+                     onKeyDown={(e) => e.key === "Enter" && handleSubmit(query)}
                   />
+                  {showDropDown && results.length > 0 && (
+                     <ul className="absolute  top-full left-3 py-2 bg-secondary right-0 mt-1 rounded-md shadow-lg z-20">
+                        {results.map((movie) => (
+                           <SearchResult
+                              key={movie.id}
+                              title={movie.title}
+                              poster_path={movie.poster_path}
+                              overView={movie.overview}
+                              click={() => handleDropDownFunctions(movie.title, movie)}
+                           />
+                        ))}
+                     </ul>
+                  )}
                </div>
             </div>
             <div className="hidden sm:flex gap-1.5 mx-auto justify-baseline w-[90%] pt-8 pb-6">{renderButtons}</div>
          </header>
          <main>
-            <div className="flex justify-center w-[90%] mx-auto pb-24 mt-4">
+            {search && (
+               <div className="w-[90%] mx-auto">
+                  <p className="text-xl text-gray-300 font-semibold">Search results for "{search}"</p>
+               </div>
+            )}
+            <div className="flex justify-center w-[90%] mx-auto pb-10 mt-4">
                <div className="flex justify-center items-center flex-wrap mx-auto gap-6 w-full text-white">
-                {activeIndex == 3 && watchList.length <= 0 && <EmptyWatchList/>}
+                  {activeIndex == 3 && watchList.length <= 0 && <EmptyWatchList />}
+
+                  {notFound && <MovieNotFound />}
 
                   {isLoading ? (
                      <Loading />
@@ -201,6 +298,24 @@ export default function Main() {
                            removeFromWatchList={() => removeFromWatchList(movie)}
                         />
                      ))
+                  )}
+               </div>
+            </div>
+            <div className="flex items-center justify-center mx-auto text-center pb-30">
+               <div className="flex gap-2  text-gray-300 rounded-xl">
+                  {activeIndex !== 3 && (
+                     <>
+                        <ArrowLeft
+                           size={30}
+                           onClick={() => setMovieTab((prev) => (prev <= 1 ? 1 : prev - 1))}
+                           className="cursor-pointer hover:text-white active:scale-105"
+                        />
+                        <ArrowRight
+                           size={30}
+                           onClick={() => setMovieTab((prev) => prev + 1)}
+                           className="cursor-pointer hover:text-white active:scale-105"
+                        />
+                     </>
                   )}
                </div>
             </div>
