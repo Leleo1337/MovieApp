@@ -10,8 +10,8 @@ export default function SearchResult({title, poster_path, overView, click}: Sear
                 alt=""
              />
              <div>
-                <h4 className="text-xl text-white font-semibold">{title}</h4>
-                <p className="text-white text-sm line-clamp-2">{overView}</p>
+                <h4 className="text-xs xl:text-xl text-white font-semibold">{title}</h4>
+                <p className="text-xs text-white xl:text-sm line-clamp-2">{overView}</p>
              </div>
           </button>
        </li>
