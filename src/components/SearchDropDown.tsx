@@ -7,8 +7,8 @@ export default function SearchResult({title, poster_path, overView, click}: Sear
              <img
                 className="min-w-14 h-16 bg-black rounded-md object-cover "
                 src={`https://image.tmdb.org/t/p/w500/${poster_path}`}
-                alt=""
-             />
+                alt="movie image"
+             />   
              <div>
                 <h4 className="text-xs xl:text-xl text-white font-semibold">{title}</h4>
                 <p className="text-xs text-white xl:text-sm line-clamp-2">{overView}</p>
