@@ -5,7 +5,7 @@ import Main from './pages/Main'
 export default function App(){
     return(
         <>
-            <BrowserRouter basename='/movieApp/'>
+            <BrowserRouter basename='/MovieWatchList/'>
                 <Routes>
                     <Route path="/" element={<Login />} />
                     <Route path="/Main" element={<Main />} />
