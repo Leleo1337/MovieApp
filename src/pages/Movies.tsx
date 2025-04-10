@@ -1,5 +1,5 @@
 import { Menu, TrendingUp, Star, Clock, Heart, Github, ArrowLeft, ArrowRight } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { MovieProps, ButtonProps } from "../types/types.ts";
 import {
    fetchPopularMovies,
@@ -35,6 +35,7 @@ export default function Main() {
    const [search, setSearch] = useState<string>("");
    const [results, setResults] = useState<MovieProps[]>([]);
    const [showDropDown, setShowDropDown] = useState(true);
+   const dropDownRef = useRef<HTMLUListElement>(null);
 
    const PageButtonsArr: ButtonProps[] = [
       {
@@ -166,6 +167,12 @@ export default function Main() {
       }
    }
 
+   // first load popular page
+   useEffect(() => {
+      handleFetchPopularMovies(1);
+   }, []);
+
+   //Search bar data fetch
    useEffect(() => {
       if (query.trim() === "") {
          setResults([]);
@@ -177,10 +184,8 @@ export default function Main() {
             const data = await handleQueryRequests(query, movieTab);
             setResults(data.slice(0, 3));
             setShowDropDown(true);
-
-            console.log(data);
          } catch (e) {
-            console.error("[Error] Something went wrong! try again later");
+            console.error("[Error] Something went wrong! try again later", e);
          }
       };
 
@@ -191,24 +196,14 @@ export default function Main() {
       return () => clearTimeout(delayDebounce);
    }, [query]);
 
+   //Render movies in watchlist
    useEffect(() => {
       if (activeIndex === 3) {
          setMovies(watchList);
       }
    }, [watchList, activeIndex]);
 
-   useEffect(() => {
-      handleFetchPopularMovies(1);
-   }, []);
-
-   useEffect(() => {
-      window.addEventListener("resize", disableSideBar);
-
-      return () => {
-         window.removeEventListener("resize", disableSideBar);
-      };
-   }, []);
-
+   //changes the body background color
    useEffect(() => {
       const bodyElement = document.body;
       bodyElement.classList.add("bg-primary");
@@ -218,6 +213,7 @@ export default function Main() {
       };
    }, []);
 
+   // tabs navigation / fetch movies when clicking in any tab
    useEffect(() => {
       if (activeIndex === 0) {
          handleFetchPopularMovies(movieTab);
@@ -227,6 +223,27 @@ export default function Main() {
          handleFetchUpcommingMovies(movieTab);
       }
    }, [movieTab, activeIndex]);
+
+   //close sidebar when page width >= 768
+   useEffect(() => {
+      window.addEventListener("resize", disableSideBar);
+
+      return () => {
+         window.removeEventListener("resize", disableSideBar);
+      };
+   }, []);
+
+   // Disable search dropdown when user clicks outside the dropdown
+   useEffect(() => {
+      function handleClickOutSide(event: MouseEvent) {
+         if (dropDownRef.current && !dropDownRef.current.contains(event.target as Node)) {
+            setShowDropDown(false);
+         }
+      }
+      document.addEventListener("mousedown", handleClickOutSide);
+
+      return () => document.removeEventListener("mousedown", handleClickOutSide);
+   }, []);
 
    return (
       <>
@@ -254,7 +271,10 @@ export default function Main() {
                      onKeyDown={(e) => e.key === "Enter" && handleSubmit(query)}
                   />
                   {showDropDown && results.length > 0 && (
-                     <ul className="absolute  top-full left-3 py-2 bg-secondary right-0 mt-1 rounded-md shadow-lg z-20">
+                     <ul
+                        ref={dropDownRef}
+                        className="absolute  top-full left-3 py-2 bg-secondary right-0 mt-1 rounded-md shadow-lg z-20"
+                     >
                         {results.map((movie) => (
                            <SearchDropDown
                               key={movie.id}
