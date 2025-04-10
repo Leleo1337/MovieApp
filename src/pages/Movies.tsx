@@ -14,6 +14,7 @@ import Loading from "../components/Loading.tsx";
 import EmptyWatchList from "../components/EmptyWatchList.tsx";
 import SearchDropDown from "../components/SearchDropDown.tsx";
 import MovieNotFound from "../components/MovieNotFound.tsx";
+import { Analytics } from "@vercel/analytics/react";
 
 export default function Main() {
    //header / sidebar
@@ -325,6 +326,7 @@ export default function Main() {
                <Github size={34} />
             </a>
          </div>
+         <Analytics />
       </>
    );
 }
