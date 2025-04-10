@@ -33,5 +33,3 @@ A personal project built with React that uses the TMDB API
 ![image](https://github.com/user-attachments/assets/347add32-b852-4ded-b1d6-908db08f8347)
 
 ![image](https://github.com/user-attachments/assets/75dadca4-accc-49a9-b100-502ab8e3224f)
-
-You can check out by [here](https://leleo1337.github.io/MovieApp/)
