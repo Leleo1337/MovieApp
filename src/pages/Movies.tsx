@@ -7,9 +7,9 @@ import {
    fetchUpcommingMovies,
    handleQueryRequests,
 } from "../services/apiServices.ts";
-import SideBar from "../components/SideBar.tsx";
+import SideBar from "../components/SideBar";
 import PageButton from "../components/PageButton.tsx";
-import Card from "../components/Card.tsx";
+import Card from "../components/Card";
 import Loading from "../components/Loading.tsx";
 import EmptyWatchList from "../components/EmptyWatchList.tsx";
 import SearchDropDown from "../components/SearchDropDown.tsx";
