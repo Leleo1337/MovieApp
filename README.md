@@ -22,6 +22,8 @@ A personal project built with React that uses the TMDB API
 - login
 - account creation
 - account customization
+- saving data in a db
+  <br>
 ( first i have to learn back-end )
 
 <br>
